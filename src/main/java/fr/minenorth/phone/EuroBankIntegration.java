@@ -48,6 +48,13 @@ public final class EuroBankIntegration implements PhoneCurrencyIntegration {
         return new Snapshot(true, "READY", PROVIDER, player.getGameProfile().getName(), List.of(b), 1, false);
     }
 
+    /** Prix d'une annonce de la petite annonce (Marketplace) : valide si c'est notre monnaie et un montant positif (en centimes). */
+    @Override
+    public PriceQuote quote(ServerPlayer player, String currencyId, long amount) {
+        if (!CURRENCY_ID.equals(currencyId) || amount <= 0) return new PriceQuote(false, "", "");
+        return new PriceQuote(true, "Compte EuroBank", euros(amount));
+    }
+
     @Override
     public TransferResult transfer(ServerPlayer player, UUID target, String targetName, long amount) {
         MinecraftServer s = player.getServer();
