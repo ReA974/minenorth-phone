@@ -1,3 +1,6 @@
+# Jar du téléphone (non redistribué)
+libs/
+
 # Gradle / builds
 build/
 .gradle/

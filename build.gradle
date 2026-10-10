@@ -32,6 +32,8 @@ repositories {
     flatDir { dirs '../minenorth-api/build/libs' }   // MineNorth API (builder minenorth-api d'abord)
 }
 dependencies {
+    // MikasRevs Phone 2 : seulement pour compiler le fournisseur de monnaie (jar non redistribué, à déposer dans libs/)
+    compileOnly files('libs/MRPhone 2 0.9.4 beta.jar')
     minecraft 'net.minecraftforge:forge:1.20.1-47.4.10'
     implementation fg.deobf("blank:minenorth_api:1.0.0")
 }

@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.slf4j.Logger;
@@ -30,6 +31,12 @@ public final class Sync {
     /** Appel -> joueurs déjà prévenus (pour ne prévenir qu'une fois, et retirer leur repère à la clôture). */
     private final Map<Long, Set<UUID>> notified = new HashMap<>();
     private int ticks;
+
+    /** Avant le démarrage du serveur : l'application Banque du téléphone passe sur EuroBank. */
+    @SubscribeEvent
+    public void onAboutToStart(ServerAboutToStartEvent e) {
+        if (PhoneConfig.ENABLED.get() && PhoneConfig.EUROBANK.get()) PhoneBank.install();
+    }
 
     @SubscribeEvent
     public void onTick(TickEvent.ServerTickEvent e) {

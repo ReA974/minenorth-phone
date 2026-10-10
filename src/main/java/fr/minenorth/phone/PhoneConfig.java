@@ -5,7 +5,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 /** <monde>/serverconfig/minenorthphone-server.toml */
 public final class PhoneConfig {
     public static final ForgeConfigSpec SPEC;
-    public static final ForgeConfigSpec.BooleanValue ENABLED, AUTO_ROLES, GIVE_TABLET, ALERT_CHAT, ALERT_MAP;
+    public static final ForgeConfigSpec.BooleanValue ENABLED, AUTO_ROLES, GIVE_TABLET, ALERT_CHAT, ALERT_MAP, EUROBANK;
     public static final ForgeConfigSpec.IntValue CHECK_SECONDS;
 
     static {
@@ -27,6 +27,11 @@ public final class PhoneConfig {
                 .define("alerteChat", true);
         ALERT_MAP = b.comment("Poser aussi un repère sur la carte (mod minenorth_map), retiré quand l'appel est clos.")
                 .define("alerteCarte", true);
+        b.pop();
+        b.push("banque");
+        EUROBANK = b.comment("L'application Banque du téléphone affiche et utilise les comptes MineNorth EuroBank (solde, virements entre joueurs).",
+                        "Sans effet si Lightman's Currency ou Kuro's Economy fournit déjà la monnaie du téléphone.")
+                .define("brancherEuroBank", true);
         b.pop();
         SPEC = b.build();
     }
