@@ -1,0 +1,39 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved - MineNorthRP"
+
+[[mods]]
+modId="minenorthphone"
+version="1.0.0"
+displayName="MineNorth Téléphone (pont)"
+authors="MineNorth RP"
+displayTest="IGNORE_SERVER_VERSION"
+description='''Pont entre MikasRevs Phone 2 et les mods Police / Secours MineNorth : rôles de répondants automatiques (en service) et alertes des appels d'urgence (chat + carte). Mod serveur : les clients n'ont pas besoin du jar.'''
+
+[[dependencies.minenorthphone]]
+modId="forge"
+mandatory=true
+versionRange="[47,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.minenorthphone]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.21)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.minenorthphone]]
+modId="minenorthapi"
+mandatory=true
+versionRange="[1.0.0,2)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.minenorthphone]]
+modId="newphone"
+mandatory=false
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"
