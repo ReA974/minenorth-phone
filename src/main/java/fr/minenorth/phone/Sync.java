@@ -99,7 +99,7 @@ public final class Sync {
 
     // ------------------------------------------------------------------ alertes
 
-    private static String label(String category) {
+    static String label(String category) {
         return switch (category) {
             case "SUSPICIOUS_ACTIVITY" -> "Activité suspecte";
             case "FIGHT_ASSAULT" -> "Agression / bagarre";

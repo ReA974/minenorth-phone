@@ -29,13 +29,13 @@ public final class PhoneBridge {
     private static final String PKG = "com.mikasrevs.newphone.";
 
     /** Un appel d'urgence du téléphone. service = « POLICE » ou « EMS », category = nom de la catégorie (ex. ARMED_THREAT). */
-    public record Call(long id, String service, String category, String caller, String dim, int x, int y, int z, String description) {}
+    public record Call(long id, String service, String category, String caller, String dim, int x, int y, int z, String description, long createdAt) {}
 
     private static boolean tried, ok;
     private static Class<?> serviceEnum;
     private static Method rolesGet, rolesServices, rolesSet, managerGet, revalidate;
     private static Field dispatchesField;
-    private static Field fId, fCategory, fCaller, fDim, fX, fY, fZ, fDesc, fStatus;
+    private static Field fId, fCategory, fCaller, fDim, fX, fY, fZ, fDesc, fStatus, fCreated;
     private static Method categoryService, statusActive;
     private static Field policeTablet, emsTablet;
 
@@ -66,6 +66,7 @@ public final class PhoneBridge {
             fZ = field(d, "z");
             fDesc = field(d, "description");
             fStatus = field(d, "status");
+            fCreated = field(d, "createdAt");
             categoryService = Class.forName(PKG + "emergency.EmergencyCategory").getMethod("service");
             statusActive = Class.forName(PKG + "emergency.EmergencyStatus").getMethod("active");
             Class<?> main = Class.forName(PKG + "NewPhone");
@@ -159,7 +160,7 @@ public final class PhoneBridge {
                 Object cat = fCategory.get(d);
                 out.add(new Call(fId.getLong(d), ((Enum<?>) categoryService.invoke(cat)).name(), ((Enum<?>) cat).name(),
                         String.valueOf(fCaller.get(d)), String.valueOf(fDim.get(d)), fX.getInt(d), fY.getInt(d), fZ.getInt(d),
-                        fDesc.get(d) == null ? "" : String.valueOf(fDesc.get(d))));
+                        fDesc.get(d) == null ? "" : String.valueOf(fDesc.get(d)), fCreated.getLong(d)));
             }
         } catch (Throwable t) {
             LOG.warn("[Telephone] Lecture des appels impossible : {}", t.toString());

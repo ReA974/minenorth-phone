@@ -11,6 +11,9 @@ Le téléphone a déjà ses appels d'urgence (police / EMS, catégories, tablett
 - **Alertes** : quand un joueur appelle depuis son téléphone, les policiers (urgence 17) ou secouristes (urgence 18) **en service** reçoivent un message
   dans le chat (catégorie, appelant, coordonnées, description) et un repère sur la carte, retiré quand l'appel est clos ou annulé.
 
+- **Tablettes MineNorth** : le pont fournit les appels d'urgence en cours à MineNorth API (`MineNorth.calls()`). La tablette **police** a un onglet
+  **ALERTES** (urgence 17) et la tablette **secours** les affiche dans son onglet ALERTES (urgence 18), avec ancienneté, lieu, distance, description et
+  un bouton **GUIDER** (repère + guidage sur la carte). Elles se rechargent toutes seules toutes les 5 s.
 - **Banque du téléphone sur EuroBank** : l'application Banque affiche le compte EuroBank du joueur (solde en €, montants rapides de 1 à 500 €) et fait les
   virements vers les autres joueurs (avec historique « Virement depuis le téléphone »). Le téléphone n'accepte normalement que Lightman's Currency ou
   Kuro's Economy : tant qu'aucun des deux n'est installé, le pont remplace au démarrage le fournisseur « mod manquant » par EuroBank

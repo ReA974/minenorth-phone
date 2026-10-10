@@ -15,6 +15,7 @@ public class MineNorthPhone {
 
     public MineNorthPhone() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, PhoneConfig.SPEC);
+        fr.minenorth.api.MineNorth.provide(fr.minenorth.api.DispatchService.class, new PhoneDispatchProvider());
         MinecraftForge.EVENT_BUS.register(new Sync());
     }
 }
