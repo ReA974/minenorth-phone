@@ -31,3 +31,15 @@ Compiler `minenorth-api` d'abord (jar dans `../minenorth-api/build/libs`), dépo
 
 ## Licence
 Tous droits réservés - MineNorthRP. Voir `LICENSE`.
+
+## Noms RP dans le téléphone (jar patché)
+Le téléphone affiche partout le pseudo Minecraft (`GameProfile.getName()`, 42 appels côté serveur : messages, contacts, appels, annonces, appels d'urgence).
+`tools/patch/` produit un jar patché (avec l'accord de l'auteur du téléphone) où ces appels deviennent `fr.minenorth.phonepatch.NameHook.name(profile)` :
+nom RP « Prénom Nom » (MineNorth API) et, sans identité, pseudo Minecraft. Le hook lit MineNorth et Forge par réflexion (le téléphone patché marche aussi sans MineNorth)
+et ne touche que les classes serveur (`server/`, `MarketplaceManager`), jamais le client.
+```
+javac -cp authlib.jar -d out tools/patch/fr/minenorth/phonepatch/NameHook.java
+javac -cp asm-9.6.jar -d out tools/patch/PatchPhone.java
+java -cp "asm-9.6.jar;out" PatchPhone "MRPhone 2 0.9.4 beta.jar" "MRPhone 2 0.9.4 beta (patché).jar" out/fr/minenorth/phonepatch/NameHook.class
+```
+À refaire à chaque nouvelle version du téléphone. Les noms déjà mémorisés par le téléphone pour des joueurs hors ligne se mettent à jour à leur prochaine connexion.
