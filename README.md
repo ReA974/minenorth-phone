@@ -7,7 +7,7 @@ Le téléphone a déjà ses appels d'urgence (police / EMS, catégories, tablett
 
 - **Rôles automatiques** : un policier **en service** devient répondant `police`, un secouriste en service devient `ems` (les deux s'il est les deux).
   À la fin du service (ou à la déconnexion) le rôle est retiré. Les rôles donnés à la main par un op (`/mphone role set …`) ne sont jamais touchés.
-  La tablette de répondant (police / secours) est remise si besoin.
+  La tablette de répondant du téléphone n'est plus donnée par défaut (`donnerTablette = false`).
 - **Alertes** : quand un joueur appelle depuis son téléphone, les policiers (urgence 17) ou secouristes (urgence 18) **en service** reçoivent un message
   dans le chat (catégorie, appelant, coordonnées, description) et un repère sur la carte, retiré quand l'appel est clos ou annulé.
 
@@ -42,4 +42,6 @@ javac -cp authlib.jar -d out tools/patch/fr/minenorth/phonepatch/NameHook.java
 javac -cp asm-9.6.jar -d out tools/patch/PatchPhone.java
 java -cp "asm-9.6.jar;out" PatchPhone "MRPhone 2 0.9.4 beta.jar" "MRPhone 2 0.9.4 beta (patché).jar" out/fr/minenorth/phonepatch/NameHook.class
 ```
+Le même patch ajoute, côté **client**, deux onglets **Police** / **Pompiers** en bas de l'écran d'accueil de l'application Urgences du téléphone (`tools/patch/PatchTabs.java`) :
+visibles seulement pour un joueur reconnu répondant (en service), ils ouvrent l'écran de la tablette de répondant sans l'objet tablette. Le jar patché doit donc aussi être installé chez les joueurs.
 À refaire à chaque nouvelle version du téléphone. Les noms déjà mémorisés par le téléphone pour des joueurs hors ligne se mettent à jour à leur prochaine connexion.

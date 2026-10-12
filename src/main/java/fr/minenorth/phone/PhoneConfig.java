@@ -19,8 +19,9 @@ public final class PhoneConfig {
         AUTO_ROLES = b.comment("Un policier (resp. secouriste) EN SERVICE devient répondant « police » (resp. « ems ») du téléphone, et le",
                         "redevient simple joueur à la fin de son service. Les rôles donnés à la main par un op ne sont jamais retirés.")
                 .define("rolesAutomatiques", true);
-        GIVE_TABLET = b.comment("Remettre la tablette de répondant (police / secours) quand le rôle est donné, s'il ne l'a pas.")
-                .define("donnerTablette", true);
+        GIVE_TABLET = b.comment("Remettre la tablette de répondant du téléphone (police / secours) quand le rôle est donné, s'il ne l'a pas.",
+                        "false (défaut) : rien n'est donné, les policiers / secouristes utilisent les tablettes MineNorth.")
+                .define("donnerTablette", false);
         b.pop();
         b.push("alertes");
         ALERT_CHAT = b.comment("Prévenir dans le chat les policiers / secouristes en service quand quelqu'un appelle.")

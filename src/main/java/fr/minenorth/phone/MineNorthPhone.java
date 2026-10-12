@@ -14,7 +14,10 @@ public class MineNorthPhone {
     public static final String MOD_ID = "minenorthphone";
 
     public MineNorthPhone() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, PhoneConfig.SPEC);
+        // COMMON (dossier config/) et non SERVER (<monde>/serverconfig/, remis à zéro à chaque redémarrage) ; serveur dédié seulement : le client ne crée aucun fichier.
+        if (net.minecraftforge.fml.loading.FMLEnvironment.dist == net.minecraftforge.api.distmarker.Dist.DEDICATED_SERVER) {
+            ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PhoneConfig.SPEC, "minenorthphone-server.toml");
+        }
         fr.minenorth.api.MineNorth.provide(fr.minenorth.api.DispatchService.class, new PhoneDispatchProvider());
         MinecraftForge.EVENT_BUS.register(new Sync());
     }

@@ -34,6 +34,10 @@ public final class PatchPhone {
                 if (en.getName().startsWith("META-INF/") && (en.getName().endsWith(".SF") || en.getName().endsWith(".RSA") || en.getName().endsWith(".DSA"))) continue;
                 byte[] data;
                 try (InputStream is = in.getInputStream(en)) { data = is.readAllBytes(); }
+                if (en.getName().equals(PatchTabs.CLASS)) {
+                    data = PatchTabs.patch(data);
+                    System.out.println("onglets Police / Pompiers  " + en.getName());
+                }
                 if (!en.isDirectory() && en.getName().endsWith(".class") && included(en.getName())) {
                     int[] n = {0};
                     ClassReader cr = new ClassReader(data);
