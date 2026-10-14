@@ -20,5 +20,6 @@ public class MineNorthPhone {
         }
         fr.minenorth.api.MineNorth.provide(fr.minenorth.api.DispatchService.class, new PhoneDispatchProvider());
         MinecraftForge.EVENT_BUS.register(new Sync());
+        MinecraftForge.EVENT_BUS.register(new PhoneDoctor());   // /mphonefix + renvoi de l'état du téléphone à la connexion (diagnostic des numéros vides)
     }
 }

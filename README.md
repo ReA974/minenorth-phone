@@ -45,3 +45,6 @@ java -cp "asm-9.6.jar;out" PatchPhone "MRPhone 2 0.9.4 beta.jar" "MRPhone 2 0.9.
 Le même patch ajoute, côté **client**, deux onglets **Police** / **Pompiers** en bas de l'écran d'accueil de l'application Urgences du téléphone (`tools/patch/PatchTabs.java`) :
 visibles seulement pour un joueur reconnu répondant (en service), ils ouvrent l'écran de la tablette de répondant sans l'objet tablette. Le jar patché doit donc aussi être installé chez les joueurs.
 À refaire à chaque nouvelle version du téléphone. Les noms déjà mémorisés par le téléphone pour des joueurs hors ligne se mettent à jour à leur prochaine connexion.
+
+## Dépannage : numéro vide / aucun contact
+Si le téléphone affiche « Mon numéro # » vide et aucun contact, le serveur n'a pas pu envoyer l'état du téléphone au joueur. Le pont renvoie cet état 5 s après chaque connexion et à la demande avec **/mphonefix [joueur]** (OP) ; en cas d'échec, la vraie erreur est écrite dans le log du serveur (`[Telephone] L'envoi de l'état du téléphone … a échoué`) et dans le chat des opérateurs.
