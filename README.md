@@ -38,8 +38,8 @@ Le téléphone affiche partout le pseudo Minecraft (`GameProfile.getName()`, 42 
 nom RP « Prénom Nom » (MineNorth API) et, sans identité, pseudo Minecraft. Le hook lit MineNorth et Forge par réflexion (le téléphone patché marche aussi sans MineNorth)
 et ne touche que les classes serveur (`server/`, `MarketplaceManager`), jamais le client.
 ```
-javac -cp authlib.jar -d out tools/patch/fr/minenorth/phonepatch/NameHook.java
-javac -cp asm-9.6.jar -d out tools/patch/PatchPhone.java
+javac --release 17 -cp authlib.jar -d out tools/patch/fr/minenorth/phonepatch/NameHook.java
+javac --release 17 -cp asm-9.6.jar -d out tools/patch/PatchPhone.java
 java -cp "asm-9.6.jar;out" PatchPhone "MRPhone 2 0.9.4 beta.jar" "MRPhone 2 0.9.4 beta (patché).jar" out/fr/minenorth/phonepatch/NameHook.class
 ```
 Le même patch ajoute, côté **client**, deux onglets **Police** / **Pompiers** en bas de l'écran d'accueil de l'application Urgences du téléphone (`tools/patch/PatchTabs.java`) :
@@ -48,3 +48,5 @@ visibles seulement pour un joueur reconnu répondant (en service), ils ouvrent l
 
 ## Dépannage : numéro vide / aucun contact
 Si le téléphone affiche « Mon numéro # » vide et aucun contact, le serveur n'a pas pu envoyer l'état du téléphone au joueur. Le pont renvoie cet état 5 s après chaque connexion et à la demande avec **/mphonefix [joueur]** (OP) ; en cas d'échec, la vraie erreur est écrite dans le log du serveur (`[Telephone] L'envoi de l'état du téléphone … a échoué`) et dans le chat des opérateurs.
+
+**Important : toujours compiler avec --release 17.** Avec un JDK plus récent (Java 27 = classe version 71), NameHook.class ne se charge pas sur le serveur (« Unsupported class file major version 71 ») et le téléphone n'envoie plus son état : numéro vide, aucun contact.
