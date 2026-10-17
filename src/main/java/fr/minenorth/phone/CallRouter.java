@@ -2,11 +2,9 @@ package fr.minenorth.phone;
 
 import com.mojang.logging.LogUtils;
 import fr.minenorth.api.MineNorth;
-import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -26,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Numéros d'urgence dans le téléphone. Chaque joueur reçoit par défaut deux contacts « Police » (17) et « Pompiers » (18) ; un appel vers l'un d'eux
- * sonne sur le téléphone PERSONNEL d'un policier / secouriste EN SERVICE qui a activé /urgencetel on. Ces contacts sont virtuels (UUID fixes) :
+ * sonne sur le téléphone PERSONNEL d'un policier / secouriste EN SERVICE qui a activé l'option dans sa tablette (police ou secours). Ces contacts sont virtuels (UUID fixes) :
  * le téléphone patché (tools/patch, PatchCalls) appelle {@link #redirect} et {@link #online} par réflexion. Tout passe par réflexion sur le téléphone.
  */
 public final class CallRouter {
@@ -160,30 +158,25 @@ public final class CallRouter {
         OPTED.remove(e.getEntity().getUUID());
     }
 
-    @SubscribeEvent
-    public void commands(RegisterCommandsEvent e) {
-        e.getDispatcher().register(Commands.literal("urgencetel")
-                .then(Commands.literal("on").executes(c -> toggle(c.getSource().getPlayerOrException(), true)))
-                .then(Commands.literal("off").executes(c -> toggle(c.getSource().getPlayerOrException(), false)))
-                .executes(c -> {
-                    ServerPlayer p = c.getSource().getPlayerOrException();
-                    p.sendSystemMessage(Component.literal("§b[Téléphone] §7Appels 17 / 18 sur votre téléphone : " + (OPTED.contains(p.getUUID()) ? "§aactivés" : "§cdésactivés")
-                            + "§7. /urgencetel on ou /urgencetel off."));
-                    return 1;
-                }));
+    // ------------------------------------------------------------------ tablettes police / secours (par réflexion)
+
+    /** État du bouton « répondre sur mon téléphone » : 0 = indisponible (téléphone patché absent ou option coupée), 1 = non, 2 = oui (et en service). */
+    public static int state(ServerPlayer p, boolean police) {
+        if (!enabled()) return 0;
+        return OPTED.contains(p.getUUID()) && onDuty(p.server, p.getUUID(), police) ? 2 : 1;
     }
 
-    private static int toggle(ServerPlayer p, boolean on) {
-        MinecraftServer s = p.server;
-        boolean police = MineNorth.police().onDuty(s, p.getUUID()), ems = MineNorth.secours().onDuty(s, p.getUUID());
-        if (on && !police && !ems) {
-            p.sendSystemMessage(Component.literal("§c[Téléphone] Prenez d'abord votre service (police ou secours)."));
-            return 0;
+    /** Active / coupe la réponse aux appels 17 (police) ou 18 (pompiers) sur le téléphone du joueur (il doit être en service). Renvoie le nouvel état (voir {@link #state}). */
+    public static int setOpted(ServerPlayer p, boolean on, boolean police) {
+        if (!enabled()) return 0;
+        if (on && !onDuty(p.server, p.getUUID(), police)) {
+            p.sendSystemMessage(Component.literal("§c[Téléphone] Prenez d'abord votre service."));
+            return state(p, police);
         }
         if (on) OPTED.add(p.getUUID()); else OPTED.remove(p.getUUID());
-        p.sendSystemMessage(Component.literal(on ? "§a[Téléphone] Les appels au " + (police ? PhoneConfig.POLICE_NUMBER.get() : "") + (police && ems ? " et " : "")
-                + (ems ? PhoneConfig.EMS_NUMBER.get() : "") + " sonneront sur votre téléphone tant que vous êtes en service."
-                : "§7[Téléphone] Vous ne recevez plus les appels 17 / 18 sur votre téléphone."));
-        return 1;
+        p.sendSystemMessage(Component.literal(on ? "§a[Téléphone] Les appels au " + (police ? PhoneConfig.POLICE_NUMBER.get() : PhoneConfig.EMS_NUMBER.get())
+                + " sonneront sur votre téléphone tant que vous êtes en service."
+                : "§7[Téléphone] Vous ne recevez plus les appels " + (police ? PhoneConfig.POLICE_NUMBER.get() : PhoneConfig.EMS_NUMBER.get()) + " sur votre téléphone."));
+        return state(p, police);
     }
 }

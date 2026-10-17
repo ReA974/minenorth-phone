@@ -32,7 +32,7 @@ public final class PhoneConfig {
         b.pop();
         b.push("numerosUrgence");
         DEFAULT_CONTACTS = b.comment("Chaque joueur a par défaut les contacts « Police » et « Pompiers » ; un appel sonne sur le téléphone d'un policier / secouriste",
-                        "EN SERVICE qui a tapé /urgencetel on. Nécessite le téléphone PATCHÉ (tools/patch, PatchCalls).")
+                        "EN SERVICE qui a activé l'option « téléphone » de sa tablette. Nécessite le téléphone PATCHÉ (tools/patch, PatchCalls).")
                 .define("contactsParDefaut", true);
         POLICE_NUMBER = b.comment("Numéro du contact Police.").define("numeroPolice", "17");
         EMS_NUMBER = b.comment("Numéro du contact Pompiers.").define("numeroPompiers", "18");

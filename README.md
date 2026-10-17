@@ -21,7 +21,7 @@ Le téléphone a déjà ses appels d'urgence (police / EMS, catégories, tablett
 
 ## Numéros 17 / 18 dans le téléphone
 - Chaque joueur reçoit par défaut deux **contacts « Police (17) » et « Pompiers (18) »** (ajoutés à la connexion ; contacts virtuels à UUID fixes).
-- Un appel vers l'un d'eux **sonne sur le téléphone personnel** d'un policier (resp. secouriste) **en service** qui a tapé **`/urgencetel on`** (`/urgencetel off` pour arrêter ; remis à zéro à la déconnexion et à la fin du service). Le premier répondant libre (pas déjà en communication) est appelé. Personne de disponible : message « Personne ne peut répondre… » et l'application Urgences reste utilisable.
+- Un appel vers l'un d'eux **sonne sur le téléphone personnel** d'un policier (resp. secouriste) **en service** qui a activé le bouton **« TÉLÉPHONE 17 / 18 : OUI »** de sa tablette (police ou secours ; même bouton pour arrêter ; remis à zéro à la déconnexion et à la fin du service). Le premier répondant libre (pas déjà en communication) est appelé. Personne de disponible : message « Personne ne peut répondre… » et l'application Urgences reste utilisable.
 - Nécessite le **téléphone patché** (`tools/patch`, `PatchCalls` : redirection dans `PhoneServerService.startCall` et drapeau « en ligne » des contacts virtuels dans `addPlayerEntry`), jar patché installé serveur ET clients. Le pont (`CallRouter`) fait le reste par réflexion. Limite connue : l'historique d'appels de l'appelant affiche le nom du répondant qui a décroché.
 - Réglages : `[numerosUrgence]` contactsParDefaut, numeroPolice, numeroPompiers.
 
