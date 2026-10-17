@@ -120,6 +120,13 @@ public final class Sync {
 
     private static String markerName(long id) { return "Appel #" + id; }
 
+    /** Texte saisi par l'appelant dans son téléphone : ni codes de mise en forme (§), ni retours à la ligne, 160 caractères au plus. */
+    static String safe(String s) {
+        if (s == null) return "";
+        s = s.replace("\u00a7", "").replaceAll("[\\r\\n\\t]", " ").trim();
+        return s.length() > 160 ? s.substring(0, 160) : s;
+    }
+
     private void alerts(MinecraftServer server) {
         List<PhoneBridge.Call> calls = PhoneBridge.activeCalls(server);
         Set<Long> activeIds = new HashSet<>();
@@ -132,8 +139,8 @@ public final class Sync {
                 boolean police = c.service().equals(POLICE);
                 if (PhoneConfig.ALERT_CHAT.get()) {
                     p.sendSystemMessage(Component.literal((police ? "§9[Urgence 17] " : "§c[Urgence 18] ") + "§f" + label(c.category())
-                            + " §7- " + c.caller() + " en §f" + c.x() + " " + c.y() + " " + c.z()
-                            + (c.description().isBlank() ? "" : " §7: " + c.description())));
+                            + " §7- " + safe(c.caller()) + " en §f" + c.x() + " " + c.y() + " " + c.z()
+                            + (c.description().isBlank() ? "" : " §7: " + safe(c.description()))));
                 }
                 if (PhoneConfig.ALERT_MAP.get()) MapBridge.set(p, markerName(c.id()), c.dim(), c.x(), c.y(), c.z(), police ? POLICE_COLOR : EMS_COLOR);
             }
