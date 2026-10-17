@@ -28,12 +28,17 @@ public final class PatchPhone {
 
     public static void main(String[] a) throws Exception {
         byte[] hook = Files.readAllBytes(Path.of(a[2]));
+        byte[] callHook = a.length > 3 ? Files.readAllBytes(Path.of(a[3])) : null;
         try (ZipFile in = new ZipFile(a[0]); ZipOutputStream out = new ZipOutputStream(Files.newOutputStream(Path.of(a[1])))) {
             for (Enumeration<? extends ZipEntry> e = in.entries(); e.hasMoreElements(); ) {
                 ZipEntry en = e.nextElement();
                 if (en.getName().startsWith("META-INF/") && (en.getName().endsWith(".SF") || en.getName().endsWith(".RSA") || en.getName().endsWith(".DSA"))) continue;
                 byte[] data;
                 try (InputStream is = in.getInputStream(en)) { data = is.readAllBytes(); }
+                if (en.getName().equals(PatchCalls.CLASS)) {
+                    data = PatchCalls.patch(data);
+                    System.out.println("appels Police / Pompiers  " + en.getName() + "  (" + PatchCalls.patched + " points)");
+                }
                 if (en.getName().equals(PatchTabs.CLASS)) {
                     data = PatchTabs.patch(data);
                     System.out.println("onglets Police / Pompiers  " + en.getName());
@@ -76,6 +81,12 @@ public final class PatchPhone {
             out.putNextEntry(he);
             out.write(hook);
             out.closeEntry();
+            if (callHook != null) {
+                ZipEntry ce = new ZipEntry("fr/minenorth/phonepatch/CallHook.class");
+                out.putNextEntry(ce);
+                out.write(callHook);
+                out.closeEntry();
+            }
         }
         System.out.println("total : " + total + " appels remplacés");
     }

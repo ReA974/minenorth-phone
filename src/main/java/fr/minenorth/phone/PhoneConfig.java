@@ -5,7 +5,8 @@ import net.minecraftforge.common.ForgeConfigSpec;
 /** <monde>/serverconfig/minenorthphone-server.toml */
 public final class PhoneConfig {
     public static final ForgeConfigSpec SPEC;
-    public static final ForgeConfigSpec.BooleanValue ENABLED, AUTO_ROLES, GIVE_TABLET, ALERT_CHAT, ALERT_MAP, EUROBANK;
+    public static final ForgeConfigSpec.BooleanValue ENABLED, AUTO_ROLES, GIVE_TABLET, ALERT_CHAT, ALERT_MAP, EUROBANK, DEFAULT_CONTACTS;
+    public static final ForgeConfigSpec.ConfigValue<String> POLICE_NUMBER, EMS_NUMBER;
     public static final ForgeConfigSpec.IntValue CHECK_SECONDS;
 
     static {
@@ -28,6 +29,13 @@ public final class PhoneConfig {
                 .define("alerteChat", true);
         ALERT_MAP = b.comment("Poser aussi un repère sur la carte (mod minenorth_map), retiré quand l'appel est clos.")
                 .define("alerteCarte", true);
+        b.pop();
+        b.push("numerosUrgence");
+        DEFAULT_CONTACTS = b.comment("Chaque joueur a par défaut les contacts « Police » et « Pompiers » ; un appel sonne sur le téléphone d'un policier / secouriste",
+                        "EN SERVICE qui a tapé /urgencetel on. Nécessite le téléphone PATCHÉ (tools/patch, PatchCalls).")
+                .define("contactsParDefaut", true);
+        POLICE_NUMBER = b.comment("Numéro du contact Police.").define("numeroPolice", "17");
+        EMS_NUMBER = b.comment("Numéro du contact Pompiers.").define("numeroPompiers", "18");
         b.pop();
         b.push("banque");
         EUROBANK = b.comment("L'application Banque du téléphone affiche et utilise les comptes MineNorth EuroBank (solde, virements entre joueurs).",

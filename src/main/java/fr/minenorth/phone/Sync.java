@@ -90,7 +90,8 @@ public final class Sync {
                 for (String s : added) {
                     if (PhoneConfig.GIVE_TABLET.get()) PhoneBridge.giveTablet(p, s);
                     p.sendSystemMessage(Component.literal("§b[Téléphone] §7Vous recevez les appels d'urgence "
-                            + (s.equals(POLICE) ? "police (17)" : "secours (18)") + " tant que vous êtes en service."));
+                            + (s.equals(POLICE) ? "police (17)" : "secours (18)") + " tant que vous êtes en service. §8/urgencetel on : les appels au "
+                            + (s.equals(POLICE) ? "17" : "18") + " sonnent aussi sur votre téléphone."));
                 }
             }
         }
