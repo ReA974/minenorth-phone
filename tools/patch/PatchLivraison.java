@@ -35,9 +35,8 @@ final class PatchLivraison {
 
     static byte[] patch(String entry, byte[] data) {
         ClassReader cr = new ClassReader(data);
-        ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS) {
-            @Override protected String getCommonSuperClass(String a, String b) { return "java/lang/Object"; }
-        };
+        // frames d'origine conservées (COMPUTE_FRAMES typerait Object les types Minecraft : VerifyError) ; frames ajoutées à la main
+        ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS);
         ClassVisitor cv = switch (entry) {
             case APP_CLASS -> app(cw, cr);
             case ICONS_CLASS -> icons(cw);
@@ -93,6 +92,7 @@ final class PatchLivraison {
                             visitLdcInsn("Livraison");
                             visitInsn(Opcodes.ARETURN);
                             visitLabel(other);
+                            visitFrame(Opcodes.F_SAME, 0, null, 0, null);
                         }
                     };
                 }
@@ -207,6 +207,7 @@ final class PatchLivraison {
                             visitJumpInsn(Opcodes.IFEQ, go);
                             visitInsn(Opcodes.RETURN);
                             visitLabel(go);
+                            visitFrame(Opcodes.F_SAME, 0, null, 0, null);
                         }
                     };
                 }
