@@ -33,19 +33,24 @@ public final class LivraisonHook {
 
     /** Applications proposées par défaut sur l'écran d'accueil (PhoneAppLayoutStore.DEFAULT_HOME) : + Livraison si le mod est présent. */
     public static List<PhoneApp> home(List<PhoneApp> base) {
-        if (open() == null) return base;
-        try {
-            List<PhoneApp> l = new ArrayList<>(base);
-            PhoneApp a = Enum.valueOf(PhoneApp.class, "LIVRAISON");
-            if (!l.contains(a)) l.add(a);
-            return Collections.unmodifiableList(l);
-        } catch (Throwable t) {
-            return base;
+        List<PhoneApp> result = base;
+        if (open() != null) {
+            try {
+                List<PhoneApp> l = new ArrayList<>(base);
+                PhoneApp a = Enum.valueOf(PhoneApp.class, "LIVRAISON");
+                if (!l.contains(a)) l.add(a);
+                result = Collections.unmodifiableList(l);
+            } catch (Throwable t) {
+                result = base;
+            }
         }
+        // Application « Mon gang » (mod Portes) : même mécanisme, ajoutée seulement si le mod est présent.
+        return GangHook.home(result);
     }
 
     /** Clic sur l'icône (ZPhoneClient.openSharedApp) : true = l'application est gérée ici (le téléphone n'ouvre pas son écran générique). */
     public static boolean open(PhoneApp app) {
+        if (app != null && "GANGS".equals(app.name())) return GangHook.open(app);
         if (app == null || !"LIVRAISON".equals(app.name())) return false;
         Method m = open();
         if (m != null) {

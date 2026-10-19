@@ -26,6 +26,14 @@ final class PatchLivraison {
     static final String APP_D = "L" + APP + ";";
     static final String RL = "net/minecraft/resources/ResourceLocation";
     static final int ORANGE = 0xFFFF7A1A;
+    static final int VIOLET = 0xFFC83CF0;
+
+    /** Applications ajoutées, dans l'ordre des ordinaux successifs : constante, libellé, clé de langue, couleur, icône (apps/<icone>.png). */
+    record NewApp(String constant, String label, String key, int color, String icon) {}
+    static final NewApp[] APPS = {
+            new NewApp("LIVRAISON", "Livraison", "screen.newphone.app.livraison", ORANGE, "livraison"),
+            new NewApp("GANGS", "Mon gang", "screen.newphone.app.gangs", VIOLET, "gangs"),
+    };
 
     private PatchLivraison() {}
 
@@ -67,15 +75,17 @@ final class PatchLivraison {
                     return new MethodVisitor(Opcodes.ASM9, mv) {
                         @Override public void visitMethodInsn(int op, String owner, String mn, String md, boolean itf) {
                             if (op == Opcodes.INVOKESTATIC && owner.equals(APP) && mn.equals("$values")) {
-                                visitTypeInsn(Opcodes.NEW, APP);
-                                visitInsn(Opcodes.DUP);
-                                visitLdcInsn("LIVRAISON");
-                                visitLdcInsn(ordinal);
-                                visitLdcInsn("screen.newphone.app.livraison");
-                                visitInsn(Opcodes.ICONST_M1);          // iconIndex : -1 = icône dessinée à part (MPhoneAppIconRenderer)
-                                visitLdcInsn(ORANGE);
-                                visitMethodInsn(Opcodes.INVOKESPECIAL, APP, "<init>", "(Ljava/lang/String;ILjava/lang/String;II)V", false);
-                                visitFieldInsn(Opcodes.PUTSTATIC, APP, "LIVRAISON", APP_D);
+                                for (int i = 0; i < APPS.length; i++) {
+                                    visitTypeInsn(Opcodes.NEW, APP);
+                                    visitInsn(Opcodes.DUP);
+                                    visitLdcInsn(APPS[i].constant());
+                                    visitLdcInsn(ordinal + i);
+                                    visitLdcInsn(APPS[i].key());
+                                    visitInsn(Opcodes.ICONST_M1);          // iconIndex : -1 = icône dessinée à part (MPhoneAppIconRenderer)
+                                    visitLdcInsn(APPS[i].color());
+                                    visitMethodInsn(Opcodes.INVOKESPECIAL, APP, "<init>", "(Ljava/lang/String;ILjava/lang/String;II)V", false);
+                                    visitFieldInsn(Opcodes.PUTSTATIC, APP, APPS[i].constant(), APP_D);
+                                }
                             }
                             super.visitMethodInsn(op, owner, mn, md, itf);
                         }
@@ -85,14 +95,16 @@ final class PatchLivraison {
                     return new MethodVisitor(Opcodes.ASM9, mv) {
                         @Override public void visitCode() {
                             super.visitCode();
-                            Label other = new Label();
-                            visitVarInsn(Opcodes.ALOAD, 0);
-                            visitFieldInsn(Opcodes.GETSTATIC, APP, "LIVRAISON", APP_D);
-                            visitJumpInsn(Opcodes.IF_ACMPNE, other);
-                            visitLdcInsn("Livraison");
-                            visitInsn(Opcodes.ARETURN);
-                            visitLabel(other);
-                            visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+                            for (NewApp app : APPS) {
+                                Label other = new Label();
+                                visitVarInsn(Opcodes.ALOAD, 0);
+                                visitFieldInsn(Opcodes.GETSTATIC, APP, app.constant(), APP_D);
+                                visitJumpInsn(Opcodes.IF_ACMPNE, other);
+                                visitLdcInsn(app.label());
+                                visitInsn(Opcodes.ARETURN);
+                                visitLabel(other);
+                                visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+                            }
                         }
                     };
                 }
@@ -101,10 +113,11 @@ final class PatchLivraison {
 
             @Override
             public void visitEnd() {
-                super.visitField(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL | Opcodes.ACC_ENUM, "LIVRAISON", APP_D, null, null).visitEnd();
+                for (NewApp app : APPS)
+                    super.visitField(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL | Opcodes.ACC_ENUM, app.constant(), APP_D, null, null).visitEnd();
                 MethodVisitor m = super.visitMethod(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC, "$values", "()[" + APP_D, null, null);
                 m.visitCode();
-                m.visitLdcInsn(ordinal + 1);
+                m.visitLdcInsn(ordinal + APPS.length);
                 m.visitTypeInsn(Opcodes.ANEWARRAY, APP);
                 for (int i = 0; i < ordinal; i++) {
                     m.visitInsn(Opcodes.DUP);
@@ -112,10 +125,12 @@ final class PatchLivraison {
                     m.visitFieldInsn(Opcodes.GETSTATIC, APP, constants.get(i), APP_D);
                     m.visitInsn(Opcodes.AASTORE);
                 }
-                m.visitInsn(Opcodes.DUP);
-                m.visitLdcInsn(ordinal);
-                m.visitFieldInsn(Opcodes.GETSTATIC, APP, "LIVRAISON", APP_D);
-                m.visitInsn(Opcodes.AASTORE);
+                for (int i = 0; i < APPS.length; i++) {
+                    m.visitInsn(Opcodes.DUP);
+                    m.visitLdcInsn(ordinal + i);
+                    m.visitFieldInsn(Opcodes.GETSTATIC, APP, APPS[i].constant(), APP_D);
+                    m.visitInsn(Opcodes.AASTORE);
+                }
                 m.visitInsn(Opcodes.ARETURN);
                 m.visitMaxs(0, 0);
                 m.visitEnd();
@@ -154,12 +169,14 @@ final class PatchLivraison {
                 m.visitVarInsn(Opcodes.ALOAD, 0);
                 m.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/util/HashMap", "<init>", "(Ljava/util/Map;)V", false);
                 m.visitVarInsn(Opcodes.ASTORE, 1);
-                m.visitVarInsn(Opcodes.ALOAD, 1);
-                m.visitFieldInsn(Opcodes.GETSTATIC, APP, "LIVRAISON", APP_D);
-                m.visitLdcInsn("livraison");
-                m.visitMethodInsn(Opcodes.INVOKESTATIC, self, "rasterIcon", "(Ljava/lang/String;)L" + RL + ";", false);
-                m.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
-                m.visitInsn(Opcodes.POP);
+                for (NewApp app : APPS) {
+                    m.visitVarInsn(Opcodes.ALOAD, 1);
+                    m.visitFieldInsn(Opcodes.GETSTATIC, APP, app.constant(), APP_D);
+                    m.visitLdcInsn(app.icon());
+                    m.visitMethodInsn(Opcodes.INVOKESTATIC, self, "rasterIcon", "(Ljava/lang/String;)L" + RL + ";", false);
+                    m.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
+                    m.visitInsn(Opcodes.POP);
+                }
                 m.visitVarInsn(Opcodes.ALOAD, 1);
                 m.visitInsn(Opcodes.ARETURN);
                 m.visitMaxs(0, 0);
