@@ -52,6 +52,15 @@ Le même patch ajoute, côté **client**, deux onglets **Police** / **Pompiers**
 visibles seulement pour un joueur reconnu répondant (en service), ils ouvrent l'écran de la tablette de répondant sans l'objet tablette. Le jar patché doit donc aussi être installé chez les joueurs.
 À refaire à chaque nouvelle version du téléphone. Les noms déjà mémorisés par le téléphone pour des joueurs hors ligne se mettent à jour à leur prochaine connexion.
 
+## Application « Livraison » dans le téléphone (jar patché)
+`tools/patch/PatchLivraison.java` ajoute une application **Livraison** (icône orange scooter + sac, `make_livraison_icon.py` → `livraison.png` 64×64) à l'écran d'accueil du téléphone :
+nouvelle constante `PhoneApp.LIVRAISON` (dernier ordinal), icône raster, `PhoneAppLayoutStore.DEFAULT_HOME` via `LivraisonHook.home`, clic via `ZPhoneClient.openSharedApp` → `LivraisonHook.open`.
+Le hook appelle par réflexion `fr.minenorth.livraison.client.ClientHooks.openFromPhone` (mod MineNorth Livraison, qui envoie `/livraison commander`) : sans ce mod, l'icône n'est pas ajoutée. Les joueurs qui ont déjà un agencement enregistré la reçoivent en dernière position.
+Commande complète (ajouter `CallHook.class`, `LivraisonHook.class` — compilé avec le jar d'origine dans le classpath — et `livraison.png` après `NameHook.class`) :
+```
+java -cp "asm-9.6.jar;out" PatchPhone "MRPhone 2 0.9.4 beta.jar" "patched.jar" out/fr/minenorth/phonepatch/NameHook.class out/fr/minenorth/phonepatch/CallHook.class out/fr/minenorth/phonepatch/LivraisonHook.class tools/patch/livraison.png
+```
+
 ## Dépannage : numéro vide / aucun contact
 Si le téléphone affiche « Mon numéro # » vide et aucun contact, le serveur n'a pas pu envoyer l'état du téléphone au joueur. Le pont renvoie cet état 5 s après chaque connexion et à la demande avec **/mphonefix [joueur]** (OP) ; en cas d'échec, la vraie erreur est écrite dans le log du serveur (`[Telephone] L'envoi de l'état du téléphone … a échoué`) et dans le chat des opérateurs.
 

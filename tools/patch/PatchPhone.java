@@ -17,7 +17,7 @@ import java.util.zip.ZipOutputStream;
  * Patch de MikasRevs Phone 2 (avec l'accord de son auteur) : dans les classes SERVEUR (server/ et MarketplaceManager), tout appel à
  * GameProfile.getName() devient fr.minenorth.phonepatch.NameHook.name(GameProfile) -> nom RP au lieu du pseudo Minecraft.
  * Même effet sur la pile (le GameProfile passe de receveur à argument, une String revient) : aucun autre changement de bytecode.
- * usage : java -cp asm.jar;. PatchPhone <jar d'origine> <jar patché> <NameHook.class>
+ * usage : java -cp asm.jar;. PatchPhone <jar d'origine> <jar patché> <NameHook.class> [CallHook.class [LivraisonHook.class livraison.png]]
  */
 public final class PatchPhone {
     static int total;
@@ -29,6 +29,8 @@ public final class PatchPhone {
     public static void main(String[] a) throws Exception {
         byte[] hook = Files.readAllBytes(Path.of(a[2]));
         byte[] callHook = a.length > 3 ? Files.readAllBytes(Path.of(a[3])) : null;
+        byte[] livraisonHook = a.length > 4 ? Files.readAllBytes(Path.of(a[4])) : null;
+        byte[] livraisonIcon = a.length > 5 ? Files.readAllBytes(Path.of(a[5])) : null;
         try (ZipFile in = new ZipFile(a[0]); ZipOutputStream out = new ZipOutputStream(Files.newOutputStream(Path.of(a[1])))) {
             for (Enumeration<? extends ZipEntry> e = in.entries(); e.hasMoreElements(); ) {
                 ZipEntry en = e.nextElement();
@@ -42,6 +44,10 @@ public final class PatchPhone {
                 if (en.getName().equals(PatchTabs.CLASS)) {
                     data = PatchTabs.patch(data);
                     System.out.println("onglets Police / Pompiers  " + en.getName());
+                }
+                if (livraisonHook != null && PatchLivraison.handles(en.getName())) {
+                    data = PatchLivraison.patch(en.getName(), data);
+                    System.out.println("application Livraison  " + en.getName());
                 }
                 if (!en.isDirectory() && en.getName().endsWith(".class") && included(en.getName())) {
                     int[] n = {0};
@@ -85,6 +91,16 @@ public final class PatchPhone {
                 ZipEntry ce = new ZipEntry("fr/minenorth/phonepatch/CallHook.class");
                 out.putNextEntry(ce);
                 out.write(callHook);
+                out.closeEntry();
+            }
+            if (livraisonHook != null) {
+                out.putNextEntry(new ZipEntry("fr/minenorth/phonepatch/LivraisonHook.class"));
+                out.write(livraisonHook);
+                out.closeEntry();
+            }
+            if (livraisonIcon != null) {
+                out.putNextEntry(new ZipEntry("assets/newphone/textures/gui/phone/apps/livraison.png"));
+                out.write(livraisonIcon);
                 out.closeEntry();
             }
         }
