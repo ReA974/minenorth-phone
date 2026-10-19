@@ -17,7 +17,7 @@ import java.util.zip.ZipOutputStream;
  * Patch de MikasRevs Phone 2 (avec l'accord de son auteur) : dans les classes SERVEUR (server/ et MarketplaceManager), tout appel à
  * GameProfile.getName() devient fr.minenorth.phonepatch.NameHook.name(GameProfile) -> nom RP au lieu du pseudo Minecraft.
  * Même effet sur la pile (le GameProfile passe de receveur à argument, une String revient) : aucun autre changement de bytecode.
- * usage : java -cp asm.jar;. PatchPhone <jar d'origine> <jar patché> <NameHook.class> [CallHook.class [LivraisonHook.class livraison.png [GangHook.class gangs.png]]]
+ * usage : java -cp asm.jar;. PatchPhone <jar d'origine> <jar patché> <NameHook.class> [CallHook.class [LivraisonHook.class livraison.png [GangHook.class gangs.png [JobsHook.class police.png secours.png mairie.png entreprise.png]]]]
  */
 public final class PatchPhone {
     static int total;
@@ -33,6 +33,13 @@ public final class PatchPhone {
         byte[] livraisonIcon = a.length > 5 ? Files.readAllBytes(Path.of(a[5])) : null;
         byte[] gangHook = a.length > 6 ? Files.readAllBytes(Path.of(a[6])) : null;
         byte[] gangIcon = a.length > 7 ? Files.readAllBytes(Path.of(a[7])) : null;
+        // applications de métier : JobsHook + 4 icônes (obligatoires dès que les applications Livraison / Mon gang sont ajoutées : PhoneAppLayoutStore appelle JobsHook)
+        byte[] jobsHook = a.length > 8 ? Files.readAllBytes(Path.of(a[8])) : null;
+        String[] jobIcons = {"police", "secours", "mairie", "entreprise"};
+        byte[][] jobIconData = new byte[jobIcons.length][];
+        for (int i = 0; i < jobIcons.length; i++) if (a.length > 9 + i) jobIconData[i] = Files.readAllBytes(Path.of(a[9 + i]));
+        if (livraisonHook != null && (jobsHook == null || a.length < 9 + jobIcons.length))
+            throw new IllegalArgumentException("JobsHook.class et les 4 icônes (police, secours, mairie, entreprise) sont requis avec LivraisonHook");
         try (ZipFile in = new ZipFile(a[0]); ZipOutputStream out = new ZipOutputStream(Files.newOutputStream(Path.of(a[1])))) {
             for (Enumeration<? extends ZipEntry> e = in.entries(); e.hasMoreElements(); ) {
                 ZipEntry en = e.nextElement();
@@ -109,6 +116,16 @@ public final class PatchPhone {
                 out.putNextEntry(new ZipEntry("assets/newphone/textures/gui/phone/apps/gangs.png"));
                 out.write(gangIcon);
                 out.closeEntry();
+            }
+            if (jobsHook != null) {
+                out.putNextEntry(new ZipEntry("fr/minenorth/phonepatch/JobsHook.class"));
+                out.write(jobsHook);
+                out.closeEntry();
+                for (int i = 0; i < jobIcons.length; i++) {
+                    out.putNextEntry(new ZipEntry("assets/newphone/textures/gui/phone/apps/" + jobIcons[i] + ".png"));
+                    out.write(jobIconData[i]);
+                    out.closeEntry();
+                }
             }
             if (livraisonIcon != null) {
                 out.putNextEntry(new ZipEntry("assets/newphone/textures/gui/phone/apps/livraison.png"));

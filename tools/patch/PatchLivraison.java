@@ -27,12 +27,22 @@ final class PatchLivraison {
     static final String RL = "net/minecraft/resources/ResourceLocation";
     static final int ORANGE = 0xFFFF7A1A;
     static final int VIOLET = 0xFFC83CF0;
+    static final int BLEU = 0xFF2F6FE0;
+    static final int ROUGE = 0xFFE03A3A;
+    static final int VERT = 0xFF2FA65A;
+    static final int OR = 0xFFE0A526;
+    static final String JOBS = "fr/minenorth/phonepatch/JobsHook";
 
     /** Applications ajoutées, dans l'ordre des ordinaux successifs : constante, libellé, clé de langue, couleur, icône (apps/<icone>.png). */
     record NewApp(String constant, String label, String key, int color, String icon) {}
     static final NewApp[] APPS = {
             new NewApp("LIVRAISON", "Livraison", "screen.newphone.app.livraison", ORANGE, "livraison"),
             new NewApp("GANGS", "Mon gang", "screen.newphone.app.gangs", VIOLET, "gangs"),
+            // applications de métier (JobsHook) : visibles seulement pour ceux qui ont le métier (état envoyé par le serveur)
+            new NewApp("POLICE", "Police", "screen.newphone.app.police", BLEU, "police"),
+            new NewApp("SECOURS", "Secours", "screen.newphone.app.secours", ROUGE, "secours"),
+            new NewApp("MAIRIE", "Mairie", "screen.newphone.app.mairie", VERT, "mairie"),
+            new NewApp("ENTREPRISE", "Entreprise", "screen.newphone.app.entreprise", OR, "entreprise"),
     };
 
     private PatchLivraison() {}
@@ -193,6 +203,16 @@ final class PatchLivraison {
             @Override
             public MethodVisitor visitMethod(int acc, String name, String desc, String sig, String[] ex) {
                 MethodVisitor mv = super.visitMethod(acc, name, desc, sig, ex);
+                if (name.equals("homeSlots") && desc.equals("()Ljava/util/List;")) {
+                    // juste avant Collections.unmodifiableList(copie) : JobsHook.fill(List) -> List ajoute les applications de métier visibles
+                    return new MethodVisitor(Opcodes.ASM9, mv) {
+                        @Override public void visitMethodInsn(int op, String owner, String mn, String md, boolean itf) {
+                            if (op == Opcodes.INVOKESTATIC && owner.equals("java/util/Collections") && mn.equals("unmodifiableList"))
+                                super.visitMethodInsn(Opcodes.INVOKESTATIC, JOBS, "fill", "(Ljava/util/List;)Ljava/util/List;", false);
+                            super.visitMethodInsn(op, owner, mn, md, itf);
+                        }
+                    };
+                }
                 if (name.equals("<clinit>")) {
                     return new MethodVisitor(Opcodes.ASM9, mv) {
                         @Override public void visitFieldInsn(int op, String owner, String fn, String fd) {

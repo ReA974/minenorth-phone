@@ -51,6 +51,7 @@ public final class LivraisonHook {
     /** Clic sur l'icône (ZPhoneClient.openSharedApp) : true = l'application est gérée ici (le téléphone n'ouvre pas son écran générique). */
     public static boolean open(PhoneApp app) {
         if (app != null && "GANGS".equals(app.name())) return GangHook.open(app);
+        if (JobsHook.open(app)) return true;   // applications de métier (Police, Secours, Mairie, Entreprise)
         if (app == null || !"LIVRAISON".equals(app.name())) return false;
         Method m = open();
         if (m != null) {
