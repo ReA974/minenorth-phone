@@ -17,7 +17,7 @@ import java.util.zip.ZipOutputStream;
  * Patch de MikasRevs Phone 2 (avec l'accord de son auteur) : dans les classes SERVEUR (server/ et MarketplaceManager), tout appel à
  * GameProfile.getName() devient fr.minenorth.phonepatch.NameHook.name(GameProfile) -> nom RP au lieu du pseudo Minecraft.
  * Même effet sur la pile (le GameProfile passe de receveur à argument, une String revient) : aucun autre changement de bytecode.
- * usage : java -cp asm.jar;. PatchPhone <jar d'origine> <jar patché> <NameHook.class> [CallHook.class [LivraisonHook.class livraison.png [GangHook.class gangs.png [JobsHook.class police.png secours.png mairie.png entreprise.png]]]]
+ * usage : java -cp asm.jar;. PatchPhone <jar d'origine> <jar patché> <NameHook.class> [CallHook.class [LivraisonHook.class livraison.png [GangHook.class gangs.png [JobsHook.class police.png secours.png mairie.png entreprise.png sante.png]]]]
  */
 public final class PatchPhone {
     static int total;
@@ -35,7 +35,7 @@ public final class PatchPhone {
         byte[] gangIcon = a.length > 7 ? Files.readAllBytes(Path.of(a[7])) : null;
         // applications de métier : JobsHook + 4 icônes (obligatoires dès que les applications Livraison / Mon gang sont ajoutées : PhoneAppLayoutStore appelle JobsHook)
         byte[] jobsHook = a.length > 8 ? Files.readAllBytes(Path.of(a[8])) : null;
-        String[] jobIcons = {"police", "secours", "mairie", "entreprise"};
+        String[] jobIcons = {"police", "secours", "mairie", "entreprise", "sante"};
         byte[][] jobIconData = new byte[jobIcons.length][];
         for (int i = 0; i < jobIcons.length; i++) if (a.length > 9 + i) jobIconData[i] = Files.readAllBytes(Path.of(a[9 + i]));
         if (livraisonHook != null && (jobsHook == null || a.length < 9 + jobIcons.length))

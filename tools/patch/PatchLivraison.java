@@ -31,6 +31,7 @@ final class PatchLivraison {
     static final int ROUGE = 0xFFE03A3A;
     static final int VERT = 0xFF2FA65A;
     static final int OR = 0xFFE0A526;
+    static final int TURQUOISE = 0xFF1FB5A8;
     static final String JOBS = "fr/minenorth/phonepatch/JobsHook";
 
     /** Applications ajoutées, dans l'ordre des ordinaux successifs : constante, libellé, clé de langue, couleur, icône (apps/<icone>.png). */
@@ -43,6 +44,7 @@ final class PatchLivraison {
             new NewApp("SECOURS", "Secours", "screen.newphone.app.secours", ROUGE, "secours"),
             new NewApp("MAIRIE", "Mairie", "screen.newphone.app.mairie", VERT, "mairie"),
             new NewApp("ENTREPRISE", "Entreprise", "screen.newphone.app.entreprise", OR, "entreprise"),
+            new NewApp("SANTE", "Santé", "screen.newphone.app.sante", TURQUOISE, "sante"),
     };
 
     private PatchLivraison() {}

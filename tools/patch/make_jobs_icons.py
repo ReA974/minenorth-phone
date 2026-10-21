@@ -84,7 +84,18 @@ def entreprise(folder):
     save(img, folder, "entreprise")
 
 
+def sante(folder):
+    img, d = base((70, 220, 200), (16, 130, 130))
+    # coeur blanc + trait de pouls
+    d.ellipse([px(11), px(14), px(33), px(36)], fill=WHITE)
+    d.ellipse([px(31), px(14), px(53), px(36)], fill=WHITE)
+    d.polygon([(px(12), px(29)), (px(52), px(29)), (px(32), px(54))], fill=WHITE)
+    d.line([(px(8), px(32)), (px(24), px(32)), (px(29), px(23)), (px(35), px(42)), (px(40), px(32)), (px(56), px(32))],
+           fill=(16, 150, 150), width=px(3), joint="curve")
+    save(img, folder, "sante")
+
+
 out = sys.argv[1]
 os.makedirs(out, exist_ok=True)
-for f in (police, secours, mairie, entreprise):
+for f in (police, secours, mairie, entreprise, sante):
     f(out)
