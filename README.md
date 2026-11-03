@@ -55,7 +55,7 @@ visibles seulement pour un joueur reconnu répondant (en service), ils ouvrent l
 ## Application « Livraison » dans le téléphone (jar patché)
 `tools/patch/PatchLivraison.java` ajoute une application **Livraison** (icône orange scooter + sac, `make_livraison_icon.py` → `livraison.png` 64×64) à l'écran d'accueil du téléphone :
 nouvelle constante `PhoneApp.LIVRAISON` (dernier ordinal), icône raster, `PhoneAppLayoutStore.DEFAULT_HOME` via `LivraisonHook.home`, clic via `ZPhoneClient.openSharedApp` → `LivraisonHook.open`.
-Le hook appelle par réflexion `fr.minenorth.livraison.client.ClientHooks.openFromPhone` (mod MineNorth Livraison, qui envoie `/livraison commander`) : sans ce mod, l'icône n'est pas ajoutée. Les joueurs qui ont déjà un agencement enregistré la reçoivent en dernière position.
+Le hook appelle par réflexion `fr.minenorth.livraison.client.ClientHooks.openFromPhone` (mod MineNorth Livraison) : sans ce mod, l'icône n'est pas ajoutée. Depuis le 2026-10-29, le mod Livraison ouvre l'application **dans l'écran du téléphone** (`PhoneLivraisonScreen`, sous-classe de `AbstractZPhoneScreen`) : aucun changement du patch ni du jar patché n'a été nécessaire. Les joueurs qui ont déjà un agencement enregistré la reçoivent en dernière position.
 Commande complète (ajouter `CallHook.class`, `LivraisonHook.class` — compilé avec le jar d'origine dans le classpath — et `livraison.png` après `NameHook.class`) :
 ```
 java -cp "asm-9.6.jar;out" PatchPhone "MRPhone 2 0.9.4 beta.jar" "patched.jar" out/fr/minenorth/phonepatch/NameHook.class out/fr/minenorth/phonepatch/CallHook.class out/fr/minenorth/phonepatch/LivraisonHook.class tools/patch/livraison.png
@@ -81,3 +81,16 @@ Les tablettes (objets) restent utilisables, mais on peut aussi les ouvrir depuis
 Commande complète : celle de « Mon gang » plus `JobsHook.class police.png secours.png mairie.png entreprise.png` en fin de ligne (obligatoires dès que Livraison est patché). Vérifié : voir les notes de livraison (liaison de toutes les classes avec `-Xverify:all`, `CheckClassAdapter.verify` sur les classes patchées).
 
 **Application « Santé »** (turquoise, `sante.png`, ordinal 39) : même mécanisme (`JobsHook`, entrée `SANTE`) mais toujours visible ; le clic appelle `fr.minenorth.secours.vie.client.PhoneSante.openFromPhone` (mod Secours) qui envoie `VieNet.Request(true)` : le serveur renvoie l'état et l'écran Santé s'ouvre (données validées côté serveur, rafraîchies toutes les 3 s). Commande : ajouter `sante.png` après `entreprise.png`.
+
+
+**Application « Plans »** (constante `DEALS`) (anthracite, `deals.png` via `make_deals_icon.py`, ordinal 40) : même mécanisme que Santé (`JobsHook`, entrée `DEALS`) : visible seulement pour un joueur qui a déjà eu de la drogue sur lui (drapeau serveur `DealerFlag`, envoyé au client) ; le clic appelle `fr.minenorth.drogue.client.PhoneDeals.openFromPhone` (mod Drogue) qui ouvre l'application dans l'écran du téléphone (`PhoneDealsScreen`, sous-classe de `AbstractZPhoneScreen`) et demande les messages des clients au serveur. Commande : ajouter `deals.png` après `sante.png`.
+
+## Applications dessinées dans l'écran du téléphone (Livraison, Mon gang, Mairie)
+Depuis le 29-30/10 (et le 02/11 pour Police, Secours, Santé et Boutiques), ces icônes n'ouvrent plus un grand écran séparé : chaque mod fournit une sous-classe de `AbstractZPhoneScreen` (`PhoneLivraisonScreen`, `portes.client.phone.PhoneGangScreen`, `etat.client.phone.PhoneMairieScreen`) ouverte par `PhoneNavigationState.open`, compilée contre `libs/mrphone-0.9.4.jar` (`compileOnly fg.deobf`). Les hooks (`LivraisonHook`, `GangHook`, `JobsHook`) et le jar patché n'ont pas changé. Le 02/11, Police (`police.client.phone.PhonePoliceScreen`), Secours et Santé (`secours.client.phone.PhoneSecoursScreen` / `PhoneSanteScreen`) passent aussi dans le téléphone, sans changement du patch. Entreprise suit le même jour (mod Entreprises).
+
+
+## Application « Boutiques » (jar patché, 02/11)
+Constante `BOUTIQUES` (framboise `0xFFE0457B`, `boutiques.png` via `make_boutiques_icon.py`, **ordinal 41**) : même mécanisme que Santé (`JobsHook`, entrée `BOUTIQUES`, toujours visible) ; le clic appelle `com.minenorth_shops.client.PhoneShops.openFromPhone` (mod Boutiques) qui ouvre l'annuaire des boutiques dans l'écran du téléphone. Sans le mod Boutiques : pas d'icône. Commande : ajouter `boutiques.png` après `deals.png`.
+Jar reconstruit le 02/11 (hooks en `--release 17`, classe version 61) : `build/patche/MRPhone 2 0.9.4 beta.jar`. Vérifié : 78 méthodes des 4 classes patchées par PatchLivraison analysées par ASM (`BasicVerifier`), 0 erreur. **Non testé en jeu.**
+
+Libellés renommés le 02/11 : « Santé » → **Sante** (le é s'affichait mal sous l'icône) et « Plans » → **Deal** (mêmes constantes `SANTE` / `DEALS`, mêmes ordinaux). Entreprise ouvre maintenant aussi son application dans le téléphone (mod Entreprises), visible pour tous. Jar reconstruit : `build/patche/MRPhone 2 0.9.4 beta.jar` (78 méthodes vérifiées, 0 erreur).

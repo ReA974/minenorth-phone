@@ -32,8 +32,11 @@ final class PatchLivraison {
     static final int VERT = 0xFF2FA65A;
     static final int OR = 0xFFE0A526;
     static final int TURQUOISE = 0xFF1FB5A8;
+    static final int ANTHRACITE = 0xFF2B2D3A;
+    static final int FRAMBOISE = 0xFFE0457B;
     static final String JOBS = "fr/minenorth/phonepatch/JobsHook";
 
+    // 02/11 : « Santé » -> « Sante » (le é du libellé d'icône s'affichait mal), « Plans » -> « Deal ».
     /** Applications ajoutées, dans l'ordre des ordinaux successifs : constante, libellé, clé de langue, couleur, icône (apps/<icone>.png). */
     record NewApp(String constant, String label, String key, int color, String icon) {}
     static final NewApp[] APPS = {
@@ -44,7 +47,10 @@ final class PatchLivraison {
             new NewApp("SECOURS", "Secours", "screen.newphone.app.secours", ROUGE, "secours"),
             new NewApp("MAIRIE", "Mairie", "screen.newphone.app.mairie", VERT, "mairie"),
             new NewApp("ENTREPRISE", "Entreprise", "screen.newphone.app.entreprise", OR, "entreprise"),
-            new NewApp("SANTE", "Santé", "screen.newphone.app.sante", TURQUOISE, "sante"),
+            new NewApp("SANTE", "Sante", "screen.newphone.app.sante", TURQUOISE, "sante"),
+            new NewApp("DEALS", "Deal", "screen.newphone.app.deals", ANTHRACITE, "deals"),
+            // annuaire des boutiques (mod Boutiques, minenorth_shops) : visible pour tous
+            new NewApp("BOUTIQUES", "Boutiques", "screen.newphone.app.boutiques", FRAMBOISE, "boutiques"),
     };
 
     private PatchLivraison() {}

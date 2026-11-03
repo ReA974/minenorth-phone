@@ -19,6 +19,8 @@ public final class JobsHook {
             {"MAIRIE", "fr.minenorth.etat.client.PhoneAppClient"},
             {"ENTREPRISE", "fr.minenorth.entreprises.client.PhoneAppClient"},
             {"SANTE", "fr.minenorth.secours.vie.client.PhoneSante"},
+            {"DEALS", "fr.minenorth.drogue.client.PhoneDeals"},
+            {"BOUTIQUES", "com.minenorth_shops.client.PhoneShops"},
     };
     private static final Method[] VISIBLE = new Method[JOBS.length];
     private static final Method[] OPEN = new Method[JOBS.length];
