@@ -61,6 +61,10 @@ Commande complète (ajouter `CallHook.class`, `LivraisonHook.class` — compilé
 java -cp "asm-9.6.jar;out" PatchPhone "MRPhone 2 0.9.4 beta.jar" "patched.jar" out/fr/minenorth/phonepatch/NameHook.class out/fr/minenorth/phonepatch/CallHook.class out/fr/minenorth/phonepatch/LivraisonHook.class tools/patch/livraison.png
 ```
 
+## Application « Déco » (jar patché, 04/11)
+Constante `DECO` (menthe `0xFF27B58C`, `deco.png` via `make_deco_icon.py` : canapé et lampe, **ordinal 42**) : même mécanisme que Boutiques (`JobsHook`, entrée `DECO`, toujours visible) ; le clic appelle `fr.minenorth.portes.client.DecoClient.openFromPhone` (mod Portes) qui ouvre l'application dans l'écran du téléphone (`portes.client.phone.PhoneDecoScreen`). Sans le mod Portes : pas d'icône. Commande : ajouter `deco.png` après `boutiques.png` (PatchPhone lit maintenant 8 icônes de métier).
+Jar reconstruit le 04/11 (hooks en `--release 17`) : `build/patche/MRPhone 2 0.9.4 beta.jar`. Vérifié : 38 méthodes de `PhoneApp` et `ZPhoneClient` analysées par ASM (`BasicVerifier`), 0 erreur. **Non testé en jeu.** Jar jamais redistribué ni poussé.
+
 ## Dépannage : numéro vide / aucun contact
 Si le téléphone affiche « Mon numéro # » vide et aucun contact, le serveur n'a pas pu envoyer l'état du téléphone au joueur. Le pont renvoie cet état 5 s après chaque connexion et à la demande avec **/mphonefix [joueur]** (OP) ; en cas d'échec, la vraie erreur est écrite dans le log du serveur (`[Telephone] L'envoi de l'état du téléphone … a échoué`) et dans le chat des opérateurs.
 
