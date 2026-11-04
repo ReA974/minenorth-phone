@@ -35,6 +35,7 @@ final class PatchLivraison {
     static final int ANTHRACITE = 0xFF2B2D3A;
     static final int FRAMBOISE = 0xFFE0457B;
     static final int MENTHE = 0xFF27B58C;
+    static final int ACIER = 0xFF39557A;
     static final String JOBS = "fr/minenorth/phonepatch/JobsHook";
 
     // 02/11 : « Santé » -> « Sante » (le é du libellé d'icône s'affichait mal), « Plans » -> « Deal ».
@@ -53,6 +54,7 @@ final class PatchLivraison {
             // annuaire des boutiques (mod Boutiques, minenorth_shops) : visible pour tous
             new NewApp("BOUTIQUES", "Boutiques", "screen.newphone.app.boutiques", FRAMBOISE, "boutiques"),
             new NewApp("DECO", "Deco", "screen.newphone.app.deco", MENTHE, "deco"),
+            new NewApp("VOL", "Vols", "screen.newphone.app.vol", ACIER, "vol"),
     };
 
     private PatchLivraison() {}
