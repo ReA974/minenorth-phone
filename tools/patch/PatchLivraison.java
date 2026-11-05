@@ -36,6 +36,7 @@ final class PatchLivraison {
     static final int FRAMBOISE = 0xFFE0457B;
     static final int MENTHE = 0xFF27B58C;
     static final int ACIER = 0xFF39557A;
+    static final int CORAIL = 0xFFFF5A8C;
     static final String JOBS = "fr/minenorth/phonepatch/JobsHook";
 
     // 02/11 : « Santé » -> « Sante » (le é du libellé d'icône s'affichait mal), « Plans » -> « Deal ».
@@ -55,6 +56,8 @@ final class PatchLivraison {
             new NewApp("BOUTIQUES", "Boutiques", "screen.newphone.app.boutiques", FRAMBOISE, "boutiques"),
             new NewApp("DECO", "Deco", "screen.newphone.app.deco", MENTHE, "deco"),
             new NewApp("VOL", "Vols", "screen.newphone.app.vol", ACIER, "vol"),
+            // parcours guidé et guides illustrés (mod Bienvenue) : visible pour tous
+            new NewApp("GUIDE", "Guide", "screen.newphone.app.guide", CORAIL, "guide"),
     };
 
     private PatchLivraison() {}

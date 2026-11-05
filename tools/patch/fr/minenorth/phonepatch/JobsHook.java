@@ -23,6 +23,7 @@ public final class JobsHook {
             {"BOUTIQUES", "com.minenorth_shops.client.PhoneShops"},
             {"DECO", "fr.minenorth.portes.client.DecoClient"},
             {"VOL", "fr.minenorth.vol.client.PhoneVol"},
+            {"GUIDE", "fr.minenorth.bienvenue.client.PhoneGuide"},
     };
     private static final Method[] VISIBLE = new Method[JOBS.length];
     private static final Method[] OPEN = new Method[JOBS.length];

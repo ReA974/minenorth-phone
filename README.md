@@ -103,3 +103,7 @@ Constante `BOUTIQUES` (framboise `0xFFE0457B`, `boutiques.png` via `make_boutiqu
 Jar reconstruit le 02/11 (hooks en `--release 17`, classe version 61) : `build/patche/MRPhone 2 0.9.4 beta.jar`. Vérifié : 78 méthodes des 4 classes patchées par PatchLivraison analysées par ASM (`BasicVerifier`), 0 erreur. **Non testé en jeu.**
 
 Libellés renommés le 02/11 : « Santé » → **Sante** (le é s'affichait mal sous l'icône) et « Plans » → **Deal** (mêmes constantes `SANTE` / `DEALS`, mêmes ordinaux). Entreprise ouvre maintenant aussi son application dans le téléphone (mod Entreprises), visible pour tous. Jar reconstruit : `build/patche/MRPhone 2 0.9.4 beta.jar` (78 méthodes vérifiées, 0 erreur).
+
+## Application « Guide » (jar patché, 05/11)
+Constante `GUIDE` (corail `0xFFFF5A8C`, `guide.png` : boussole blanche sur dégradé rose-orange, générée par `minenorth-bienvenue/outils/assets.py`, **ordinal 44**) : `JobsHook`, entrée `GUIDE`, toujours visible ; le clic appelle `fr.minenorth.bienvenue.client.PhoneGuide.openFromPhone` (mod Bienvenue) qui ouvre l'appli dans l'écran du téléphone (parcours des nouveaux, fiches illustrées, affiches). Sans le mod Bienvenue : pas d'icône.
+Commande : ajouter `guide.png` après `vol.png`. Seul `JobsHook` a été recompilé (`--release 17`) ; les autres hooks sont ceux de `build/patchout`. Jar reconstruit le 05/11 : 84 méthodes de `PhoneApp`, `PhoneAppLayoutStore`, `ZPhoneClient`, `MPhoneAppIconRenderer` et `JobsHook` analysées par ASM (`BasicVerifier`), 0 erreur. Non testé en jeu. Jar jamais redistribué ni poussé.
